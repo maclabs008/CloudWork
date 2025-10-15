@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  httpd:
+    image: httpd:latest
+    container_name: httpd_app
+    ports:
+      - "8085:80"
+    volumes:
+      - ./httpd-data:/usr/local/apache2/htdocs
+    networks:
+      - webnet
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_app
+    ports:
+      - "8086:80"
+    volumes:
+      - ./nginx-data:/usr/share/nginx/html
+    networks:
+      - webnet
+
+  python:
+    image: python:3.9-alpine
+    container_name: python_app
+    command: >
+      sh -c "echo 'Hello from Python container!' > index.html && python3 -m http.server 8000"
+    ports:
+      - "8087:8000"
+    volumes:
+      - ./python-data:/app
+    working_dir: /app
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge
